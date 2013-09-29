@@ -6,11 +6,11 @@
  // Processing UDP example to send and receive string data from Arduino 
  // press any key to send the "Hello Arduino" message
  
- 
+ // Import UDP library
  import hypermedia.net.*;
  
  UDP udp;  // define the UDP object
- String ip       = "192.168.23.177";  // the remote IP address
+ String ip       = "10.88.88.177";  // the remote IP address
  int port        = 8888;    // the destination port
  
  int mode=0;
@@ -25,17 +25,19 @@
  
  void setup() {
    
+   // make window 
    size(768, 768);
    noStroke();
-   background(255,255,255);
+   background(255);
    
- udp = new UDP( this, 6000 );  // create a new datagram connection on port 6000
- //udp.log( true );     // <-- printout the connection activity
- udp.listen( true );           // and wait for incoming message  
+   udp = new UDP( this, 6000 );  // create a new datagram connection on port 6000
+   //udp.log( true );            // <-- printout the connection activity
+   udp.listen( true );           // and wait for incoming message  
  }
  
- void draw()
- {
+ void draw() {
+   
+   // define colors for ui 
    color backColor = color(50,20,0);
    color rauteColor = color(rauR, rauG, rauB);
    color letColor = color(letR, letG, letB);
@@ -104,7 +106,7 @@
    int pos=4;
    for(int x=255; x>=0; x--){
      pos = int(pos + 2);
-     fill(x,x,x);
+     fill(x);
      rect(646, pos, 99, 2);
    }
   
@@ -154,34 +156,34 @@
   else if(picturePos()=="ran"){
     mode=2;
     print("mode=2");
-}
+  }
   
-if(picturePos()=="rau" || picturePos()=="let" || picturePos()=="fre" || picturePos()=="rin"){
+  if(picturePos()=="rau" || picturePos()=="let" || picturePos()=="fre" || picturePos()=="rin") {
   
-  switch(mode){
+    switch(mode){
   
-    case 0:
+      case 0:
           neon();
           break;
-    case 1:
+      case 1:
           pulse();
           break;
-    case 2:
+      case 2:
           random();
           break;
-    default:
+      default:
           random();
+    }
   }
-}
   
- }
+}
  
- void receive( byte[] data ) {       // <-- default handler
+void receive( byte[] data ) {       // <-- default handler
  //void receive( byte[] data, String ip, int port ) {  // <-- extended handler
  
  for(int i=0; i < data.length; i++) 
- print(char(data[i]));  
- println();   
+   print(char(data[i]));  
+   println();   
  }
  
  // detecting the position under the mouse
@@ -265,11 +267,11 @@ void turnon() {
 // fade in
 void pulseUp() {  
   for (int i=1; i <= 255; i++) {
-  udp.send(outString(i,i,i), ip, port);
-  if(i>25) i++;
-  if(i>50) i++;
-  if(i>150)i++;
-  if(i>200)i++;
+    udp.send(outString(i,i,i), ip, port);
+    if(i>25) i++;
+    if(i>50) i++;
+    if(i>150)i++;
+    if(i>200)i++;
     delay(8);
   }
 }
@@ -277,11 +279,11 @@ void pulseUp() {
 // fade out
 void pulseDown() {  
   for (int i=255; i >= 0; i--) {
-  udp.send(outString(i,i,i), ip, port);
-  if(i>25) i--;
-  if(i>50) i--;
-  if(i>150)i--;
-  if(i>200)i--;
+    udp.send(outString(i,i,i), ip, port);
+    if(i>25) i--;
+    if(i>50) i--;
+    if(i>150)i--;
+    if(i>200)i--;
     delay(8);
   }
 }  
@@ -301,15 +303,20 @@ void random(){
   udp.send(outString(globalR, globalG, globalB), ip, port);
 }
 
+// transmit brightness for right brightness panel 
 void brightnessLFR(){
-  if(mouseX>646 && mouseY<517 && (ms+75)<millis()){
+  if(mouseX>4 && mouseX>646 && mouseY<517 && (ms+75)<millis()){
     ms = millis();
     float factor = 255/float(max(globalR, globalG, globalB));
     float wert = (255/(255-(mouseY-6)/2));
     print(wert);
+    print(' ');
+    // haerter typisieren & udp send
     udp.send(outString(int(float(globalR) * factor/wert), int(float(globalG) * factor/wert), int(float(globalB) * factor/wert)), ip, port);
   }
 }
+
+// transmit rgb values from color panel at the bottom
 void colorLFR(){
   if(mouseY>545 && mouseY<745 && (ms+125)<millis()){
     ms=millis();
